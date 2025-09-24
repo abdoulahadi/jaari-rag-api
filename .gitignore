@@ -4,3 +4,19 @@ data/cache/
 __pycache__/
 *.pyc
 *.log
+
+# Environment files with secrets
+.env
+.env.local
+.env.*.local
+
+# Google Cloud Service Account credentials
+*.json
+translate-jaari-*.json
+
+# Logs
+logs/
+*.log
+
+# Audio files
+data/audio_output/
