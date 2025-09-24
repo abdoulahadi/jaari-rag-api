@@ -1,25 +1,30 @@
 services:
   - type: web
     name: jaari-rag-api
-    env: docker
-    repo: https://github.com/FullMetal19/Jaari.git  # Remplace par ton repo
-    dockerfilePath: ./jaari-rag-api/Dockerfile
-    region: oregon  # ou une autre région proche de toi
-    plan: starter  # ou standard/pro selon tes besoins
+    env: python3
+    repo: https://github.com/abdoulahadi/jaari-rag-api.git
+    region: oregon
+    plan: starter
     
     # Configuration des variables d'environnement
     envVars:
-      - key: LLM_PROVIDER
-        value: groq
-      
       - key: ENVIRONMENT
         value: production
         
       - key: DEBUG
         value: false
         
+      - key: HOST
+        value: 0.0.0.0
+        
+      - key: PORT
+        value: 10000
+        
       - key: LOG_LEVEL
         value: INFO
+        
+      - key: LOG_FORMAT
+        value: json
         
       # Base de données (tu devras configurer une base PostgreSQL sur Render)
       - key: DATABASE_URL
@@ -54,7 +59,8 @@ services:
         value: "Jaari Administrator"
     
     # Configuration du build
-    buildCommand: echo "Building with Docker..."
+    buildCommand: pip install -r requirements.txt
+    startCommand: python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT
     
     # Health check
     healthCheckPath: /health

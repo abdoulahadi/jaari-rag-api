@@ -1,0 +1,32 @@
+# Ignorer les fichiers de développement
+.env
+.env.*
+*.log
+__pycache__/
+.pytest_cache/
+.coverage
+.vscode/
+.idea/
+
+# Ignorer les données locales
+data/
+uploads/
+cache/
+logs/
+
+# Ignorer les fichiers Docker (on utilise le build natif Python)
+Dockerfile.local
+docker-compose*.yml
+.dockerignore
+
+# Ignorer les fichiers de backup
+backup_sensitive_files/
+translate-jaari-*.json
+
+# Ignorer les fichiers système
+.DS_Store
+Thumbs.db
+
+# Ignorer les fichiers git
+.git/
+.gitignore
