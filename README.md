@@ -541,3 +541,4 @@ Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
 **Développé avec ❤️ par l'équipe Xelkoom pour l'agriculture africaine**
 
 *Dernière mise à jour: Août 2025*
+# Force rebuild for Render native Python
