@@ -1,0 +1,103 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache
+.coverage
+htmlcov
+.tox/
+.nox/
+.cache
+.mypy_cache
+
+# Docker
+docker-compose*.yml
+.dockerignore
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Data directories (content will be recreated)
+data/vectorstore/*
+data/cache/*
+data/logs/*
+# Keep directory structure
+!data/vectorstore/.gitkeep
+!data/cache/.gitkeep
+!data/logs/.gitkeep
+
+# Environment files (will be set via Render environment variables)
+.env
+.env.local
+.env.*.local
+.env.example
+
+# Dependencies
+node_modules/
+
+# Documentation (keep essential ones)
+docs/
+*.md
+!README.md
+
+# Development and testing files
+tests/
+test_*
+*_test.py
+.coverage.*
+pytest.ini
+
+# Backup and temporary files
+*.bak
+*.backup
+*.old
+*.orig
+tmp/
+temp/
+.tmp/

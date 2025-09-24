@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  # API Service
+  jaari-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:///./data/jaari_rag.db
+      - SECRET_KEY=your-super-secret-key-change-this-in-production-please-make-it-long-and-random
+      - ENVIRONMENT=development
+      - DEBUG=true
+      - OLLAMA_BASE_URL=http://192.168.1.3:11434
+      - REDIS_URL=redis://redis:6379/0
+      - CORS_ORIGINS=http://localhost:3000,http://localhost:8080,http://localhost:8501
+      # Admin par défaut configuration
+      - DEFAULT_ADMIN_EMAIL=admin@jaari.com
+      - DEFAULT_ADMIN_USERNAME=admin
+      - DEFAULT_ADMIN_PASSWORD=admin123
+      - DEFAULT_ADMIN_FULL_NAME=Administrateur Jaari Dev
+    volumes:
+      - ./data:/app/data
+      - ./uploads:/app/uploads
+      - ./cache:/app/cache
+      - ./logs:/app/logs
+    depends_on:
+      - redis
+    restart: unless-stopped
+    networks:
+      - jaari-network
+
+  # Redis Service (for caching)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - jaari-network
+
+volumes:
+  redis_data:
+
+networks:
+  jaari-network:
+    driver: bridge

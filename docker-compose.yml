@@ -1,0 +1,112 @@
+version: '3.8'
+
+services:
+  # API Service
+  jaari-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:///./data/jaari_rag.db
+      - SECRET_KEY=your-super-secret-key-change-this-in-production
+      - ENVIRONMENT=development
+      - DEBUG=true
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+      # Admin par défaut configuration
+      - DEFAULT_ADMIN_EMAIL=admin@jaari.com
+      - DEFAULT_ADMIN_USERNAME=admin
+      - DEFAULT_ADMIN_PASSWORD=admin123
+      - DEFAULT_ADMIN_FULL_NAME=Administrateur Jaari
+    volumes:
+      - ./data:/app/data
+      - ./uploads:/app/uploads
+      - ./cache:/app/cache
+      - ./logs:/app/logs
+    depends_on:
+      - redis
+    restart: unless-stopped
+    networks:
+      - jaari-network
+
+  # Redis Service (for caching and Celery)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - jaari-network
+
+  # Celery Worker (optional, for background tasks)
+  celery-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A app.core.celery worker --loglevel=info
+    environment:
+      - DATABASE_URL=sqlite:///./data/jaari_rag.db
+      - SECRET_KEY=your-super-secret-key-change-this-in-production
+      - ENVIRONMENT=development
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+      # Admin par défaut configuration
+      - DEFAULT_ADMIN_EMAIL=admin@jaari.com
+      - DEFAULT_ADMIN_USERNAME=admin
+      - DEFAULT_ADMIN_PASSWORD=admin123
+      - DEFAULT_ADMIN_FULL_NAME=Administrateur Jaari
+    volumes:
+      - ./data:/app/data
+      - ./uploads:/app/uploads
+      - ./cache:/app/cache
+      - ./logs:/app/logs
+    depends_on:
+      - redis
+    restart: unless-stopped
+    networks:
+      - jaari-network
+
+  # Celery Beat (optional, for scheduled tasks)
+  celery-beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A app.core.celery beat --loglevel=info
+    environment:
+      - DATABASE_URL=sqlite:///./data/jaari_rag.db
+      - SECRET_KEY=your-super-secret-key-change-this-in-production
+      - ENVIRONMENT=development
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+      # Admin par défaut configuration
+      - DEFAULT_ADMIN_EMAIL=admin@jaari.com
+      - DEFAULT_ADMIN_USERNAME=admin
+      - DEFAULT_ADMIN_PASSWORD=admin123
+      - DEFAULT_ADMIN_FULL_NAME=Administrateur Jaari
+    volumes:
+      - ./data:/app/data
+      - ./uploads:/app/uploads
+      - ./cache:/app/cache
+      - ./logs:/app/logs
+    depends_on:
+      - redis
+    restart: unless-stopped
+    networks:
+      - jaari-network
+
+volumes:
+  redis_data:
+
+networks:
+  jaari-network:
+    driver: bridge

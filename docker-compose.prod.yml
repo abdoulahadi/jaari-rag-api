@@ -1,0 +1,161 @@
+version: '3.8'
+
+services:
+  # API Service (Production)
+  jaari-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://jaari_user:${POSTGRES_PASSWORD}@postgres:5432/jaari_rag_db
+      - SECRET_KEY=${SECRET_KEY}
+      - ENVIRONMENT=production
+      - DEBUG=false
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+      # Admin par défaut configuration (CHANGEZ CES VALEURS EN PRODUCTION)
+      - DEFAULT_ADMIN_EMAIL=${ADMIN_EMAIL:-admin@jaari.com}
+      - DEFAULT_ADMIN_USERNAME=${ADMIN_USERNAME:-admin}
+      - DEFAULT_ADMIN_PASSWORD=${ADMIN_PASSWORD:-changeme123}
+      - DEFAULT_ADMIN_FULL_NAME=${ADMIN_FULL_NAME:-Administrateur Jaari}
+      # CORS Configuration
+      - CORS_ORIGINS=https://yourdomain.com,https://dashboard.yourdomain.com
+    volumes:
+      - jaari_data:/app/data
+      - jaari_uploads:/app/uploads
+      - jaari_cache:/app/cache
+      - jaari_logs:/app/logs
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+    networks:
+      - jaari-network
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 1G
+
+  # PostgreSQL Database (Production)
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=jaari_rag_db
+      - POSTGRES_USER=jaari_user
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - jaari-network
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 512M
+
+  # Redis Service
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - jaari-network
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+
+  # Celery Worker
+  celery-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A app.core.celery worker --loglevel=info --concurrency=4
+    environment:
+      - DATABASE_URL=postgresql://jaari_user:${POSTGRES_PASSWORD}@postgres:5432/jaari_rag_db
+      - SECRET_KEY=${SECRET_KEY}
+      - ENVIRONMENT=production
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+    volumes:
+      - jaari_data:/app/data
+      - jaari_uploads:/app/uploads
+      - jaari_cache:/app/cache
+      - jaari_logs:/app/logs
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+    networks:
+      - jaari-network
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 512M
+
+  # Celery Beat
+  celery-beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A app.core.celery beat --loglevel=info
+    environment:
+      - DATABASE_URL=postgresql://jaari_user:${POSTGRES_PASSWORD}@postgres:5432/jaari_rag_db
+      - SECRET_KEY=${SECRET_KEY}
+      - ENVIRONMENT=production
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+    volumes:
+      - jaari_data:/app/data
+      - jaari_uploads:/app/uploads
+      - jaari_cache:/app/cache
+      - jaari_logs:/app/logs
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+    networks:
+      - jaari-network
+
+  # Nginx Reverse Proxy (optionnel)
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - jaari-api
+    restart: unless-stopped
+    networks:
+      - jaari-network
+
+volumes:
+  postgres_data:
+  redis_data:
+  jaari_data:
+  jaari_uploads:
+  jaari_cache:
+  jaari_logs:
+
+networks:
+  jaari-network:
+    driver: bridge

@@ -1,0 +1,80 @@
+services:
+  - type: web
+    name: jaari-rag-api
+    env: docker
+    repo: https://github.com/FullMetal19/Jaari.git  # Remplace par ton repo
+    dockerfilePath: ./jaari-rag-api/Dockerfile
+    region: oregon  # ou une autre région proche de toi
+    plan: starter  # ou standard/pro selon tes besoins
+    
+    # Configuration des variables d'environnement
+    envVars:
+      - key: LLM_PROVIDER
+        value: groq
+      
+      - key: ENVIRONMENT
+        value: production
+        
+      - key: DEBUG
+        value: false
+        
+      - key: LOG_LEVEL
+        value: INFO
+        
+      # Base de données (tu devras configurer une base PostgreSQL sur Render)
+      - key: DATABASE_URL
+        fromDatabase:
+          name: jaari-postgres
+          property: connectionString
+      
+      # Redis (optionnel, tu peux utiliser Redis de Render)
+      - key: REDIS_URL
+        fromService:
+          name: jaari-redis
+          type: redis
+          property: connectionString
+      
+      # Variables à configurer dans le dashboard Render
+      - key: GROQ_API_KEY
+        sync: false  # À configurer manuellement dans le dashboard
+        
+      - key: SECRET_KEY
+        generateValue: true  # Render génère automatiquement
+        
+      - key: DEFAULT_ADMIN_EMAIL
+        value: admin@jaari.com
+        
+      - key: DEFAULT_ADMIN_USERNAME
+        value: admin
+        
+      - key: DEFAULT_ADMIN_PASSWORD
+        generateValue: true  # Render génère automatiquement
+        
+      - key: DEFAULT_ADMIN_FULL_NAME
+        value: "Jaari Administrator"
+    
+    # Configuration du build
+    buildCommand: echo "Building with Docker..."
+    
+    # Health check
+    healthCheckPath: /health
+    
+    # Auto-deploy depuis la branche main
+    autoDeploy: true
+    branch: main
+
+# Base de données PostgreSQL
+databases:
+  - name: jaari-postgres
+    databaseName: jaari_db
+    user: jaari_user
+    region: oregon
+    plan: starter
+
+# Redis (optionnel)
+services:
+  - type: redis
+    name: jaari-redis
+    region: oregon
+    plan: starter
+    maxmemoryPolicy: allkeys-lru
