@@ -609,8 +609,10 @@ Réponse de salutation :"""
             # Traduction automatique en wolof via Google Cloud
             wolof_answer = None
             try:
-                import os
-                if os.environ.get('GOOGLE_APPLICATION_CREDENTIALS') or os.environ.get('GOOGLE_CLOUD_PROJECT'):
+                from app.utils.google_credentials import get_google_credentials_path
+                credentials_path = get_google_credentials_path()
+                
+                if credentials_path:
                     from google.cloud import translate_v2 as translate
                     translate_client = translate.Client()
                     
@@ -772,9 +774,11 @@ Réponse de salutation :"""
             wolof_answer = None
             
             try:
-                # Vérifier que les credentials Google Cloud sont configurés
-                import os
-                if os.environ.get('GOOGLE_APPLICATION_CREDENTIALS') or os.environ.get('GOOGLE_CLOUD_PROJECT'):
+                # Vérifier que les credentials Google Cloud sont configurés  
+                from app.utils.google_credentials import get_google_credentials_path
+                credentials_path = get_google_credentials_path()
+                
+                if credentials_path:
                     from google.cloud import translate_v2 as translate
                     translate_client = translate.Client()
                     

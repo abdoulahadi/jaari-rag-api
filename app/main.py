@@ -45,6 +45,17 @@ async def lifespan(app: FastAPI):
     # Startup
     logger.info("🚀 Starting Jaari RAG API...")
     
+    # Initialize Google Cloud credentials
+    try:
+        from app.utils.google_credentials import setup_google_credentials
+        credentials_path = setup_google_credentials()
+        if credentials_path:
+            logger.info("✅ Google Cloud credentials configured")
+        else:
+            logger.warning("⚠️ Google Cloud credentials not found - translation features may be limited")
+    except Exception as e:
+        logger.warning(f"⚠️ Google Cloud credentials setup failed: {str(e)}")
+    
     # Test database connection
     try:
         # Import models to ensure they're registered with Base
