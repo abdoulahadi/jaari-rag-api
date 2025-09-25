@@ -1,0 +1,63 @@
+# 🚨 FIX TRADUCTION WOLOF
+
+## Problème
+La traduction Wolof ne fonctionne pas (`answer_wolof: null`) car les credentials Google Cloud ne sont pas configurées.
+
+**Erreur dans les logs :**
+```
+⚠️ Google Cloud credentials setup failed: cannot import name 'setup_google_credentials'
+```
+
+## ✅ SOLUTION IMMÉDIATE
+
+### Sur Render Dashboard :
+
+1. **Allez dans Settings → Environment**
+
+2. **Ajoutez cette variable OBLIGATOIRE :**
+   ```bash
+   GOOGLE_APPLICATION_CREDENTIALS_JSON = ewogICJ0eXBlIjogInNlcnZpY2VfYWNjb3VudCIsCiAgInByb2plY3RfaWQiOiAidHJhbnNsYXRlLWphYXJpIiwKICAicHJpdmF0ZV9rZXlfaWQiOiAiMDY1ZmE3NjRiZThhZjczMWMwMzVjYzY5Mzk4ODQzMTE4ZjgyZGVjNSIsCiAgInByaXZhdGVfa2V5IjogIi0tLS0tQkVHSU4gUFJJVkFURSBLRVktLS0tLVxuTUlJRXZRSUJBREFOQmdrcWhraUc5dzBCQVFFRkFBU0NCS2N3Z2dTakFnRUFBb0lCQVFDOG9rTXl5b3RuRDZBeFxuQ1dkUHF1MmttRGJBL3RoZVZvaTZVaDhHVGw1cWJKVU5oQW5TMmtxZWtuTVBXMmtxOFQ4STc1TStNdnF4NHBzRFxuM0pHKzhLRmsyaVN3TlB5UHEvWk5rYUxicW15b1IwdHVWWi9rRUNMdkNOc3BhM1oyU3gwMVBiclpKWHcrQWh1clxuanRYSDBWS0xmN1pyV21tOW8rV0lBZnBHeGVLcmRLV1pGQjZKcHpJUGkvaSsrclBsem1lbkRXRUVEcitSNDdIWlxuWCtFaDR3SzhOTWhFSjlxd3dCMGtuUEtmaks2MktZbmVUdXVGSmt1OUREREtOdGIrU3piT1c3Z2x0VVAwOElORFxuUW1KVzRsSFUrbFphcTIrVExZZEZUbE4rM3FQWUc1NkdreE5LaXZXcWVkWjYzbWNBajdIZENqclIrNEdLMlRIalxuTCszYWhoZHJBZ01CQUFFQ2dnRUFHNllVLzI3Y3ZBQjRWSGV5WXVVRTdDazdiVkp0V0hhS2wvVE5nMWtkVWJBVVxuc09SM3BDWkc1Yk5GbGl5cDM1ZDR5OENCM280T1hPQ0FKRExDVWlCbko2Y3AxWUlPdXVoVHM4N3k5Z3VtM1l1Rlxuck9oMEJUT3dTeVViS3BrTHhnOEFldnRQVmVDK3MwQVAyamVYY2pCbVR2Z3JQdFVEeHI0dE9LQkJsUG9RWFZ6OVxuTGhDZjdkMnZBQnVQbW4xSUsvcFhoQ1hVUXNxTHFoRUF0V2Q4UytiUXNCVk9USmNHNFpiWEMyYk51bU9LVVhqUFxuOXFaZjdIdmhLVzVxSnZEREVOMkYrMitPb1pxQ0pIVE9YdXhMUjJaY2FRbGJiM1FScEZ0Yis3d3hScGFHdTdWbVxuMnRKa3lJalJzV3pZTXJSSWpwaWIyUm12bU9mdkhYYkNQUWt4c0I0YklRS0JnUURpVXlYUFo0T00xTmExYlhJMFxuazBYMkJLSEczSkFidW1VL283cFhhcHhXbmUwbDRreVBZNTNQSDF5TWpQRFlXV1c3bmNFaDIxZWl3MVhjQ1hkeVxuUjExdjhmTUk2aEcrcS9YTGFucVNxVGpta1RraG90cFpsVU11MFBYdzRkMXpwQ2dlK0ptTkFMNStBSXNTaUl2T1xuNmJSdStlbnZUZmQ1cG5XZklDUTVFMEx3R1FLQmdRRFZYZmx5OEJuUXJLWUczL3NGZjQ3TTBWZC9Sa2ZWMzhwOFxuRHlpcCtwQjZKdmZIMnQyWm9zdG9xZ0dISStXKzRpVUtPcURvUEJGWkN6UzNiYTZNNmFlY2crUE9ScVE0WnBiQ1xuTWJoMG1NY2N0MndGR1huQVU4N3d0QlpmY3FMckxGTmV0eis3TU1JZkJQUnMzY29QSTFuV1JQOVdSRHBsY3lFNVxuQXBndmkvSGtJd0tCZ0gyRk5kUVlpZG9DZE8zOFBEbXljRHVvaC95ZGVRTVgxbTE4SmEyenYrODkrVGRva2FONFxuMFIzOU83dnJzdXVhY1JTandtZy9tUlA1RjlaSUhjbndrSDYwaG1Dc1NKa2lEOWo0UGZDM0Q0cTRnaUlJaXViaVxuSkhlRGh0Tkl3U1FRcC91OVRwUG9GTDRYR1FwM1ZtcTBMTkRicEFXSGpUZ1h2T1k2MGp3aFZaK0pBb0dCQUw4V1xucUw5ZGRXRkVIblZ0eDF6SFB0Y0ViWDVaTFNESWlvbk04Ymc1NVliZ3Uyek1BVWNGVzNMalB2Y1BHVVY1TjM4UFxudnVmK1UvTVJiQ2NUSGc2cGZDbGFuWDB5R3dWQUs2akQ2dFRSdHhGcTNGMDgwYU9ENjRQN1pVWWFYdnFMK2lhTFxucTVJME9zYVpJMmNVdzFBSGN2L0pUM3l0SWplVmdwMlNTMFhaNmN0TkFvR0FWMmNlSTRtMzErOTZHZzlrdTdWNVxuYzBMYXBqN040bXI4Kyt1Q1AzTWRsMzBvc3o0SEtPYlI4YWZDUXIzaEswck91U2RUaUhQWnhDcXRXcDVaMEZDalxuWjZJRXJSbWxvUkNiZms5cUZ3bjFaalJWcjFxSjZhNUhwY0xiSnB6N0prZnRhS252Z2NuWU14SzJ5VWdVUE1PQVxuTmJwOTVVdTk0Y1B5VmFyUHk0eXhqU0E9XG4tLS0tLUVORCBQUklWQVRFIEtFWS0tLS0tXG4iLAogICJjbGllbnRfZW1haWwiOiAiamFhcmktNDg1QHRyYW5zbGF0ZS1qYWFyaS5pYW0uZ3NlcnZpY2VhY2NvdW50LmNvbSIsCiAgImNsaWVudF9pZCI6ICIxMDM2NDE0NDQ0MDQ3MzI5MTcwOTUiLAogICJhdXRoX3VyaSI6ICJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20vby9vYXV0aDIvYXV0aCIsCiAgInRva2VuX3VyaSI6ICJodHRwczovL29hdXRoMi5nb29nbGVhcGlzLmNvbS90b2tlbiIsCiAgImF1dGhfcHJvdmlkZXJfeDUwOV9jZXJ0X3VybCI6ICJodHRwczovL3d3dy5nb29nbGVhcGlzLmNvbS9vYXV0aDIvdjEvY2VydHMiLAogICJjbGllbnRfeDUwOV9jZXJ0X3VybCI6ICJodHRwczovL3d3dy5nb29nbGVhcGlzLmNvbS9yb2JvdC92MS9tZXRhZGF0YS94NTA5L2phYXJpLTQ4NSU0MHRyYW5zbGF0ZS1qYWFyaS5pYW0uZ3NlcnZpY2VhY2NvdW50LmNvbSIsCiAgInVuaXZlcnNlX2RvbWFpbiI6ICJnb29nbGVhcGlzLmNvbSIKfQo=
+   ```
+
+3. **Redéployez votre application**
+
+## ✅ APRÈS LE REDÉPLOIEMENT
+
+Vous devriez voir dans les logs :
+```
+✅ Google Cloud credentials configured
+```
+
+Au lieu de :
+```
+⚠️ Google Cloud credentials setup failed
+```
+
+## 🧪 TEST
+
+Testez à nouveau votre endpoint de chat :
+```json
+{
+  "question": "Hello",
+  "answer": "...",
+  "answer_wolof": "Salaam aleykum! Man ngi Jaari...",  ← Maintenant rempli
+  "audio_wolof_path": "/audio/...",
+  "sources": null,
+  "response_time": 0.63
+}
+```
+
+## 🔧 VARIABLES RENDER COMPLÈTES
+
+```bash
+# OBLIGATOIRES pour la traduction Wolof
+GOOGLE_APPLICATION_CREDENTIALS_JSON = [valeur base64 ci-dessus]
+GROQ_API_KEY = gsk_your_groq_key
+SECRET_KEY = Oy-eDEX0HB1ALOHIJkrpObRrVvI3BH8BykYPuJnF2bA
+
+# OPTIONNELLES
+FORCE_SQLITE = true  # Si vous voulez forcer SQLite
+ENVIRONMENT = production
+```
+
+La traduction Wolof fonctionnera après ajout de ces credentials ! 🚀

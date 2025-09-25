@@ -5,7 +5,9 @@ FROM python:3.11-slim
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PYTHONPATH=/app \
-    PORT=10000
+    PORT=10000 \
+    TRANSFORMERS_CACHE=/app/cache/transformers \
+    HF_HOME=/app/cache/huggingface
 
 # Créer un utilisateur non-root pour la sécurité
 RUN groupadd -r appuser && useradd -r -g appuser appuser
@@ -33,6 +35,8 @@ RUN mkdir -p /app/data/logs \
              /app/data/audio_output \
              /app/data/vectorstore \
              /app/cache/embeddings \
+             /app/cache/transformers \
+             /app/cache/huggingface \
              /app/uploads && \
     chown -R appuser:appuser /app
 

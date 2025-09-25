@@ -31,6 +31,10 @@ class Settings(BaseSettings):
     # Startup behavior
     AUTO_BUILD_VECTORSTORE: bool = False  # Disable auto-build by default
     
+    # Cache directories
+    TRANSFORMERS_CACHE: str = "/app/cache/transformers"
+    HF_HOME: str = "/app/cache/huggingface"
+    
     # Server
     HOST: str = "0.0.0.0"
     PORT: int = 8000
