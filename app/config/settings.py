@@ -34,6 +34,7 @@ class Settings(BaseSettings):
     WORKERS: int = 4
     
     # Database
+    FORCE_SQLITE: bool = False  # Force l'utilisation de SQLite
     DATABASE_URL: str = "sqlite:///./data/jaari_rag.db"
     DATABASE_POOL_SIZE: int = 5  # Réduit pour SQLite
     DATABASE_MAX_OVERFLOW: int = 10  # Réduit pour SQLite

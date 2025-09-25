@@ -11,23 +11,39 @@ from typing import Generator
 from app.config.settings import settings
 
 # SQLAlchemy setup
-if settings.DATABASE_URL.startswith("sqlite"):
+if settings.FORCE_SQLITE or settings.DATABASE_URL.startswith("sqlite"):
     # Configuration spéciale pour SQLite
+    sqlite_url = "sqlite:///./data/jaari_rag.db"
     engine = create_engine(
-        settings.DATABASE_URL,
+        sqlite_url,
         poolclass=StaticPool,
         connect_args={"check_same_thread": False},
         pool_pre_ping=True,
     )
+    print(f"🗃️ Utilisation de SQLite: {sqlite_url}")
 else:
-    # Configuration pour PostgreSQL/autres
-    engine = create_engine(
-        settings.DATABASE_URL,
-        pool_size=settings.DATABASE_POOL_SIZE,
-        max_overflow=settings.DATABASE_MAX_OVERFLOW,
-        pool_pre_ping=True,
-        pool_recycle=300,  # 5 minutes
-    )
+    try:
+        # Configuration pour PostgreSQL/autres
+        engine = create_engine(
+            settings.DATABASE_URL,
+            pool_size=settings.DATABASE_POOL_SIZE,
+            max_overflow=settings.DATABASE_MAX_OVERFLOW,
+            pool_pre_ping=True,
+            pool_recycle=300,  # 5 minutes
+        )
+        print(f"🐘 Utilisation de PostgreSQL: {settings.DATABASE_URL[:30]}...")
+    except Exception as e:
+        print(f"❌ Erreur PostgreSQL: {e}")
+        print("🔄 Basculement vers SQLite...")
+        # Fallback vers SQLite en cas d'erreur
+        sqlite_url = "sqlite:///./data/jaari_rag.db"
+        engine = create_engine(
+            sqlite_url,
+            poolclass=StaticPool,
+            connect_args={"check_same_thread": False},
+            pool_pre_ping=True,
+        )
+        print(f"✅ SQLite de secours activé: {sqlite_url}")
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
