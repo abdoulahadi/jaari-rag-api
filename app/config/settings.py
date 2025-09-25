@@ -34,7 +34,7 @@ class Settings(BaseSettings):
     WORKERS: int = 4
     
     # Database
-    DATABASE_URL: str
+    DATABASE_URL: str = "sqlite:///./data/jaari_rag.db"
     DATABASE_POOL_SIZE: int = 20
     DATABASE_MAX_OVERFLOW: int = 30
     
@@ -43,7 +43,7 @@ class Settings(BaseSettings):
     REDIS_CACHE_TTL: int = 3600
     
     # JWT Authentication
-    SECRET_KEY: str
+    SECRET_KEY: str = "your-secret-key-change-in-production"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
