@@ -28,6 +28,9 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
     DEBUG: bool = True
     
+    # Startup behavior
+    AUTO_BUILD_VECTORSTORE: bool = False  # Disable auto-build by default
+    
     # Server
     HOST: str = "0.0.0.0"
     PORT: int = 8000

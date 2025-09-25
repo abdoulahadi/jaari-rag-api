@@ -80,33 +80,38 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning(f"⚠️ Redis connection failed: {str(e)} - some features may be limited")
     
-    # Initialize RAG engine
+    # Initialize RAG engine (non-blocking)
     try:
+        logger.info("Initializing RAG Engine...")
         if await rag_engine.initialize():
             logger.info("✅ RAG Engine initialized")
             
-            # Check if vectorstore needs to be built
-            rag_status = rag_engine.get_status()
-            if not rag_status.get("vectorstore_available", False):
-                logger.info("🔄 No vectorstore found, auto-building from corpus...")
-                try:
-                    from pathlib import Path
-                    corpus_path = Path("data/corpus")
-                    if corpus_path.exists() and any(corpus_path.iterdir()):
-                        # Auto-build vectorstore
-                        success = await rag_engine.build_vectorstore_from_directory(str(corpus_path))
-                        if success:
-                            logger.info("✅ Auto-vectorization completed successfully")
+            # Check auto-build setting
+            if settings.AUTO_BUILD_VECTORSTORE:
+                # Check if vectorstore needs to be built
+                rag_status = rag_engine.get_status()
+                if not rag_status.get("vectorstore_available", False):
+                    logger.info("🔄 No vectorstore found, auto-building from corpus...")
+                    try:
+                        from pathlib import Path
+                        corpus_path = Path("data/corpus")
+                        if corpus_path.exists() and any(corpus_path.iterdir()):
+                            # Auto-build vectorstore
+                            success = await rag_engine.build_vectorstore_from_directory(str(corpus_path))
+                            if success:
+                                logger.info("✅ Auto-vectorization completed successfully")
+                            else:
+                                logger.warning("⚠️ Auto-vectorization failed")
                         else:
-                            logger.warning("⚠️ Auto-vectorization failed")
-                    else:
-                        logger.warning("⚠️ No corpus directory found for auto-vectorization")
-                except Exception as e:
-                    logger.warning(f"⚠️ Auto-vectorization failed: {str(e)}")
+                            logger.warning("⚠️ No corpus directory found for auto-vectorization")
+                    except Exception as e:
+                        logger.warning(f"⚠️ Auto-vectorization failed: {str(e)}")
+            else:
+                logger.info("⚡ Auto-build disabled for faster startup - use /api/v1/corpus/build to build vectorstore")
         else:
-            logger.warning("⚠️ RAG Engine initialization failed - some features may be limited")
+            logger.warning("⚠️ RAG Engine initialization partial - some features may be limited")
     except Exception as e:
-        logger.warning(f"⚠️ RAG Engine initialization failed: {str(e)} - some features may be limited")
+        logger.warning(f"⚠️ RAG Engine initialization failed: {str(e)} - continuing with limited functionality")
     
     # Initialize default admin user
     try:
