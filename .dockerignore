@@ -1,0 +1,80 @@
+# Fichiers de développement
+.git
+.gitignore
+README.md
+DEPLOYMENT_GUIDE.md
+RENDER_ENV_VARIABLES.md
+prepare_deployment.sh
+
+# Environnements virtuels
+venv/
+env/
+.venv/
+.env/
+
+# Fichiers Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Fichiers sensibles
+.env
+.env.local
+.env.production
+*.json
+*.key
+*.pem
+
+# Logs
+logs/
+*.log
+
+# Cache
+cache/
+.cache/
+
+# Données temporaires
+data/jaari_rag.db*
+data/logs/
+data/audio_output/
+data/vectorstore/index.*
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+Dockerfile.local
+docker-compose*.yml
+
+# Tests
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Uploads temporaires
+uploads/*
