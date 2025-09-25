@@ -35,8 +35,8 @@ class Settings(BaseSettings):
     
     # Database
     DATABASE_URL: str = "sqlite:///./data/jaari_rag.db"
-    DATABASE_POOL_SIZE: int = 20
-    DATABASE_MAX_OVERFLOW: int = 30
+    DATABASE_POOL_SIZE: int = 5  # Réduit pour SQLite
+    DATABASE_MAX_OVERFLOW: int = 10  # Réduit pour SQLite
     
     # Redis
     REDIS_URL: str = "redis://localhost:6379/0"
