@@ -5,7 +5,8 @@ FROM python:3.11-slim
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PYTHONPATH=/app \
-    PORT=10000 \
+    PORT=8080 \
+    EMBEDDINGS_CACHE=/app/cache/embeddings \
     TRANSFORMERS_CACHE=/app/cache/transformers \
     HF_HOME=/app/cache/huggingface
 
