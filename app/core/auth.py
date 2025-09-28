@@ -10,8 +10,13 @@ import secrets
 
 from app.config.settings import settings
 
-# Password hashing
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Password hashing - Configuration robuste
+pwd_context = CryptContext(
+    schemes=["bcrypt"], 
+    deprecated="auto",
+    bcrypt__rounds=12,  # Rounds par défaut
+    bcrypt__truncate_error=True  # Activer la gestion automatique des erreurs de troncature
+)
 
 
 class AuthManager:
@@ -96,15 +101,32 @@ class AuthManager:
         logger = logging.getLogger(__name__)
         logger.info(f"Hashing password - length: {len(password)}, bytes: {len(password.encode('utf-8'))}")
         
-        # Ensure password is not too long for bcrypt (72 bytes max)
-        if len(password.encode('utf-8')) > 72:
-            logger.warning(f"Password too long for bcrypt ({len(password.encode('utf-8'))} bytes), truncating to 72 bytes")
-            # Truncate to 72 bytes while preserving UTF-8 encoding
-            password_bytes = password.encode('utf-8')[:72]
-            # Decode back, handling potential incomplete UTF-8 sequences
-            password = password_bytes.decode('utf-8', errors='ignore')
-        
-        return pwd_context.hash(password)
+        try:
+            # Ensure password is not too long for bcrypt (72 bytes max)
+            password_bytes = password.encode('utf-8')
+            if len(password_bytes) > 72:
+                logger.warning(f"Password too long for bcrypt ({len(password_bytes)} bytes), truncating to 72 bytes")
+                # Truncate to 72 bytes while preserving UTF-8 encoding
+                password_bytes = password_bytes[:72]
+                # Decode back, handling potential incomplete UTF-8 sequences
+                password = password_bytes.decode('utf-8', errors='ignore')
+                logger.info(f"Password truncated to: {len(password)} characters, {len(password.encode('utf-8'))} bytes")
+            
+            return pwd_context.hash(password)
+            
+        except Exception as e:
+            logger.error(f"Error hashing password: {str(e)}")
+            # Fallback: manually truncate and retry
+            try:
+                password_truncated = password[:72] if len(password) > 72 else password
+                logger.warning(f"Retrying with simple truncation: {len(password_truncated)} characters")
+                return pwd_context.hash(password_truncated)
+            except Exception as fallback_error:
+                logger.error(f"Fallback hashing also failed: {str(fallback_error)}")
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Password hashing failed"
+                )
     
     def verify_password(self, plain_password: str, hashed_password: str) -> bool:
         """Verify password against hash"""
@@ -113,15 +135,29 @@ class AuthManager:
         logger = logging.getLogger(__name__)
         logger.info(f"Verifying password - length: {len(plain_password)}, bytes: {len(plain_password.encode('utf-8'))}")
         
-        # Ensure password is not too long for bcrypt (72 bytes max)
-        if len(plain_password.encode('utf-8')) > 72:
-            logger.warning(f"Password too long for bcrypt verification ({len(plain_password.encode('utf-8'))} bytes), truncating to 72 bytes")
-            # Truncate to 72 bytes while preserving UTF-8 encoding
-            password_bytes = plain_password.encode('utf-8')[:72]
-            # Decode back, handling potential incomplete UTF-8 sequences
-            plain_password = password_bytes.decode('utf-8', errors='ignore')
-        
-        return pwd_context.verify(plain_password, hashed_password)
+        try:
+            # Ensure password is not too long for bcrypt (72 bytes max)
+            password_bytes = plain_password.encode('utf-8')
+            if len(password_bytes) > 72:
+                logger.warning(f"Password too long for bcrypt verification ({len(password_bytes)} bytes), truncating to 72 bytes")
+                # Truncate to 72 bytes while preserving UTF-8 encoding
+                password_bytes = password_bytes[:72]
+                # Decode back, handling potential incomplete UTF-8 sequences
+                plain_password = password_bytes.decode('utf-8', errors='ignore')
+                logger.info(f"Password truncated to: {len(plain_password)} characters, {len(plain_password.encode('utf-8'))} bytes")
+            
+            return pwd_context.verify(plain_password, hashed_password)
+            
+        except Exception as e:
+            logger.error(f"Error verifying password: {str(e)}")
+            # Fallback: manually truncate and retry
+            try:
+                password_truncated = plain_password[:72] if len(plain_password) > 72 else plain_password
+                logger.warning(f"Retrying verification with simple truncation: {len(password_truncated)} characters")
+                return pwd_context.verify(password_truncated, hashed_password)
+            except Exception as fallback_error:
+                logger.error(f"Fallback verification also failed: {str(fallback_error)}")
+                return False
     
     def generate_api_key(self) -> str:
         """Generate secure API key"""
