@@ -91,10 +91,36 @@ class AuthManager:
     
     def hash_password(self, password: str) -> str:
         """Hash password using bcrypt"""
+        # Debug logging
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.info(f"Hashing password - length: {len(password)}, bytes: {len(password.encode('utf-8'))}")
+        
+        # Ensure password is not too long for bcrypt (72 bytes max)
+        if len(password.encode('utf-8')) > 72:
+            logger.warning(f"Password too long for bcrypt ({len(password.encode('utf-8'))} bytes), truncating to 72 bytes")
+            # Truncate to 72 bytes while preserving UTF-8 encoding
+            password_bytes = password.encode('utf-8')[:72]
+            # Decode back, handling potential incomplete UTF-8 sequences
+            password = password_bytes.decode('utf-8', errors='ignore')
+        
         return pwd_context.hash(password)
     
     def verify_password(self, plain_password: str, hashed_password: str) -> bool:
         """Verify password against hash"""
+        # Debug logging
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.info(f"Verifying password - length: {len(plain_password)}, bytes: {len(plain_password.encode('utf-8'))}")
+        
+        # Ensure password is not too long for bcrypt (72 bytes max)
+        if len(plain_password.encode('utf-8')) > 72:
+            logger.warning(f"Password too long for bcrypt verification ({len(plain_password.encode('utf-8'))} bytes), truncating to 72 bytes")
+            # Truncate to 72 bytes while preserving UTF-8 encoding
+            password_bytes = plain_password.encode('utf-8')[:72]
+            # Decode back, handling potential incomplete UTF-8 sequences
+            plain_password = password_bytes.decode('utf-8', errors='ignore')
+        
         return pwd_context.verify(plain_password, hashed_password)
     
     def generate_api_key(self) -> str:
